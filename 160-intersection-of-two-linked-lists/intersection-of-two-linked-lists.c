@@ -17,7 +17,7 @@ struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *he
                current2 = current2->next;
         }
         current = current->next;
-        current2 = headB;
+        current2 = headB;  //要在讓headB從頭驗證一次
     }
     return NULL;
 }
