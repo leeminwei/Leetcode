@@ -18,7 +18,7 @@ struct ListNode* removeElements(struct ListNode* head, int val) {
         current = current->next;
     }
     tail->next = NULL;
-    struct ListNode* result = newHead->next;
-    free(newHead); 
-    return result;
+    //struct ListNode* result = newHead->next;
+    //free(newHead); 
+    return newHead->next;
 }
