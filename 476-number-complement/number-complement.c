@@ -6,6 +6,7 @@ int findComplement(int num) {
     while(num>=1){
         arr = (char*)realloc(arr,(size+1)*sizeof(char));
         arr[size] = num%2 +'0';
+        //補數 or 可以寫成arr[i] = (arr[i] == '0') ? '1' : '0';
         if(arr[size]=='0')
             arr[size]='1';
         else
