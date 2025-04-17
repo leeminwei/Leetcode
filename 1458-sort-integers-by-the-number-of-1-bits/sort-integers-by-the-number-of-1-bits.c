@@ -10,6 +10,7 @@ int bitcount(int n) {
     return count;
 }
 int* sortByBits(int* arr, int arrSize, int* returnSize) {
+    /*
     for(int i=0 ; i<arrSize ; i++){
         for(int j=i+1 ; j<arrSize ; j++){
             if(arr[i]>arr[j]){
@@ -19,6 +20,7 @@ int* sortByBits(int* arr, int arrSize, int* returnSize) {
             }
         }  
     }
+    */
     for(int i=0 ; i<arrSize ; i++){
         for(int j=i+1 ; j<arrSize ; j++){
             if(bitcount(arr[i])>bitcount(arr[j])||(bitcount(arr[i]) == bitcount(arr[j]) && arr[i] > arr[j])){
