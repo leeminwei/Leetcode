@@ -10,7 +10,7 @@ int countConsistentStrings(char * allowed, char ** words, int wordsSize){
         for(int j=0 ; j<strlen(words[i]) ; j++){
             words_mask |= 1<<abs(words[i][j]-'a');
         }
-        if((words_mask & ~allow_mask) == 0){
+        if((words_mask & allow_mask) == words_mask){
                 count++;
             }
     }
