@@ -9,7 +9,7 @@ int bitmask(const char* a, int start, int end){
             upper_mask |= 1<<(a[i] - 'A');
         }
     }
-    return lower_mask == upper_mask; 
+    return lower_mask == upper_mask; //if true return 1 else return 0
 }
 char* longestNiceSubstring(char* s) {
     int start = 0;
@@ -17,7 +17,7 @@ char* longestNiceSubstring(char* s) {
     int max = 0;
     for(int i=0 ; i<strlen(s) ; i++){
         for(int j=i ; j<strlen(s) ; j++){
-            if(bitmask(s,i,j) && j-i+1 > max){
+            if(bitmask(s,i,j)==1 && j-i+1 > max){
                 start = i;
                 end = j;
                 max = j-i+1;
