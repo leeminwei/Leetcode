@@ -24,10 +24,12 @@ int findLHS(int* nums, int numsSize) {
         int count = 1;
         int number = i;
         int len = 0;
+        //用來數當前重複的元素有幾個
         while(number + 1 < numsSize && freq[number]==freq[number+1]){
             count++;
             number++;
         }
+        //如果遇到下一個元素的值差"1"  那就開始數下一個元素重複幾個
         if(number + 1 < numsSize && freq[number+1]-freq[i]==1){
             int next_value = number+1;
             int next_count = 1;
