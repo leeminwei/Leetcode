@@ -22,7 +22,6 @@ int findLHS(int* nums, int numsSize) {
     int max = 0;
     for(int i=0 ; i<numsSize ; i++){
         int count = 1;
-        int next_count = 1;
         int number = i;
         int len = 0;
         while(number + 1 < numsSize && freq[number]==freq[number+1]){
@@ -31,6 +30,7 @@ int findLHS(int* nums, int numsSize) {
         }
         if(number + 1 < numsSize && freq[number+1]-freq[i]==1){
             int next_value = number+1;
+            int next_count = 1;
             while(next_value + 1 < numsSize && freq[next_value]==freq[next_value+1]){
                 next_count++;
                 next_value++;
