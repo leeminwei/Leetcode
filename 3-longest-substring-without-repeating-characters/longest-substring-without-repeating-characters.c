@@ -17,6 +17,19 @@ int mask(char*s,int start,int end){
     }
     return count;
 }
+int lengthOfLongestSubstring(char* s) {
+    int max = 0;
+    int n = strlen(s);
+    for(int i=0 ; i<n; i++){
+        int number = 0;
+        for(int j=i ; j<n ; j++){
+            number = mask(s,i,j);
+            if(number>max)
+                max = number;
+        }
+    }
+    return max;
+}
 */
 int lengthOfLongestSubstring(char* s) {
     int n = strlen(s);
@@ -35,17 +48,3 @@ int lengthOfLongestSubstring(char* s) {
 
     return max;
 }
-    /*
-    int max = 0;
-    int n = strlen(s);
-    for(int i=0 ; i<n; i++){
-        int number = 0;
-        for(int j=i ; j<n ; j++){
-            number = mask(s,i,j);
-            if(number>max)
-                max = number;
-        }
-    }
-    return max;
-}
-*/
