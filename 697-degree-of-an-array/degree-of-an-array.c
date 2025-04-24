@@ -21,26 +21,23 @@ int findShortestSubArray(int* nums, int numsSize) {
     int maxFreq = 0;
     int minLen = numsSize;
 
-    for (int i = 0; i < numsSize; i++) {
+    for (int i=0 ; i<numsSize ; i++) {
         int index = nums[i];
-
-        if (freq[index] == 0) {
-            first[index] = i;  // 第一次出現
+        if(freq[index]==0){      //如果這個元素第一次出現
+            first[index] = i;    //記錄這個元素出現的第一個位置
         }
-
         freq[index]++;
-
-        if (freq[index] > maxFreq) {
+        if (freq[index] > maxFreq) { //持續更新最短長度
             maxFreq = freq[index];
             minLen = i - first[index] + 1;
-        } else if (freq[index] == maxFreq) {
+        }
+        else if (freq[index] == maxFreq) {  //比較如果最大頻率相等的狀況出現
             int len = i - first[index] + 1;
             if (len < minLen)
                 minLen = len;
         }
     }
-
-    return minLen;
+    return minLen;   
 }
 
 //Time Limit
