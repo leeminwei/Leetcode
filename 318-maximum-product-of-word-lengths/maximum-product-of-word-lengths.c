@@ -13,9 +13,9 @@ int maxProduct(char** words, int wordsSize) {
         for(int j=i+1 ; j<wordsSize ; j++){
             if((bitmask(words[i])&bitmask(words[j]))==0){
                 len = strlen(words[i])*strlen(words[j]);
+                if(len>max_len)
+                    max_len = len;
             }
-            if(len>max_len)
-                max_len = len;
         }
     }
     return max_len;
