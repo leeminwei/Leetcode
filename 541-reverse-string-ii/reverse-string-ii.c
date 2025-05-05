@@ -22,6 +22,7 @@ char* reverseStr(char* s, int k) {
         point2 += 2*k;
         point += 2*k;
     }
+    //確認現在的point不會超出size
     int right = point;
     if (right > size)
         right = size;
