@@ -14,7 +14,7 @@ int maxDistance(int** arrays, int arraysSize, int* arraysColSize) {
         int distance2 = abs(max - curmin);
         if (distance1 > result) result = distance1;
         if (distance2 > result) result = distance2;
-        // 更新 minVal 和 maxVal
+        // 更新 min 和 max
         if (curmin < min) min = curmin;
         if (curmax > max) max = curmax;
     }
