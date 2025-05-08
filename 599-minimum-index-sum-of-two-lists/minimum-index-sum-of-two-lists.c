@@ -35,7 +35,7 @@ char** findRestaurant(char** list1, int list1Size, char** list2, int list2Size, 
     int index = 0;
     for(entry = map ; entry!=NULL ; entry = entry->hh.next){
         if(entry->position2 + entry->position1 == min){
-            arr[index] = malloc(strlen(list1[entry->position1]) + 1);
+            arr[index] = malloc((strlen(list1[entry->position1]) + 1)*sizeof(char));
             strcpy(arr[index], list1[entry->position1]);
             index++;
         }
