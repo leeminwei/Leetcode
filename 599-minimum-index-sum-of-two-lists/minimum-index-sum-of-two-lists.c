@@ -21,7 +21,8 @@ char** findRestaurant(char** list1, int list1Size, char** list2, int list2Size, 
                     entry->key = list1[i];
                     entry->position1 = i;
                     entry->position2 = j;
-                    HASH_ADD_KEYPTR(hh, map, entry->key, strlen(entry->key), entry);
+                    HASH_ADD_STR(map, key, entry);
+                    //HASH_ADD_KEYPTR(hh, map, entry->key, strlen(entry->key), entry);
                     len = i+j;
                     if(len<min){
                         min = len;
