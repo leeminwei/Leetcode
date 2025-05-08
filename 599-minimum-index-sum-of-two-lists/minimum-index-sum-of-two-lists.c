@@ -18,7 +18,7 @@ char** findRestaurant(char** list1, int list1Size, char** list2, int list2Size, 
                 HASH_FIND_STR(map, list1[i], entry);
                 if (entry == NULL) {
                     entry = malloc(sizeof(hash));
-                    entry->key = list1[i];
+                    entry->key = strdup(list1[i]);
                     entry->position1 = i;
                     entry->position2 = j;
                     HASH_ADD_STR(map, key, entry);
