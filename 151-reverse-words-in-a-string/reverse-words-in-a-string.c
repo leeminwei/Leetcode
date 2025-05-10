@@ -31,6 +31,7 @@ char* reverseWords(char* s) {
             strncpy(arr+position,token,size);
         }
     }
+    //判斷陣列的第一個元素是不是字母或數字，如果不是就進行未移
     while (!isalnum(arr[0])) {
         memmove(arr, arr + 1, strlen(arr));
     }
