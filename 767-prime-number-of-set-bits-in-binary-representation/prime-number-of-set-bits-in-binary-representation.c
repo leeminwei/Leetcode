@@ -6,7 +6,7 @@ int countone(int n){
     }
     return count;
 }
-int count(int n){
+int countbit(int n){
     int bit = 0;
     int number = 0;
     while(n>=1){
