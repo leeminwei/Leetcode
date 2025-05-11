@@ -35,5 +35,6 @@ char* toHex(int num) {
         result[idx++] = arr[i];
     }
     result[idx] = '\0';
+    free(arr);
     return result;
 }
