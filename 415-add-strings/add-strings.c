@@ -36,13 +36,22 @@ char* addStrings(char* num1, char* num2) {
     arr = realloc(arr,(index+1)*sizeof(int));
     arr[index] = '\0';
     printf("%s",arr);
+    int position = index-1;
+    for(int i=0 ; i<index/2 ; i++){
+        int number = arr[i];
+        arr[i] = arr[position];
+        arr[position] = number;
+        position--;
+    }
+    /*
     char* result = malloc((index+1)*sizeof(char));
     int idx = 0;
     for(int i=index-1 ; i>=0 ; i--){
         result[idx++] = arr[i];
     }
     result[index] = '\0';
-    return result;
+    */
+    return arr;
 }
 /*
 int size = strlen(num1);
