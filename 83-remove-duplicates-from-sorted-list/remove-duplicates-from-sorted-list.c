@@ -22,6 +22,7 @@ struct ListNode* deleteDuplicates(struct ListNode* head) {
         }
     }
     tail->next = NULL;
+    tail = tail->next;
     return dummy->next;
 }
 /*
