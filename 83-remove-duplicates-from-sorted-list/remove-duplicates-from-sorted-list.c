@@ -6,7 +6,26 @@
  * };
  */
 struct ListNode* deleteDuplicates(struct ListNode* head) {
-    struct ListNode* dummy = (struct ListNode*)malloc(sizeof(struct ListNode));
+    if(head==NULL) return NULL;
+    struct ListNode* tail = (struct ListNode*)malloc(sizeof(struct ListNode));
+    tail->next = NULL;
+    struct ListNode* dummy = tail;
+    struct ListNode* current = head;
+    while(current!=NULL){
+        if(tail->val!=current->val){
+            tail->next = current;
+            tail = tail->next;
+            current = current->next;
+        }
+        else{
+            current = current->next;
+        }
+    }
+    tail->next = NULL;
+    return dummy->next;
+}
+/*
+struct ListNode* dummy = (struct ListNode*)malloc(sizeof(struct ListNode));
     dummy->next = NULL;
     struct ListNode* tail = dummy;
     struct ListNode* current = head;
@@ -32,18 +51,4 @@ struct ListNode* deleteDuplicates(struct ListNode* head) {
         } 
     }
     return dummy->next;
-}
-    /*
-    struct ListNode* current = head;
-    while(current!=NULL){
-        if(current->next != NULL && current->val == current->next->val){
-            current->next = current->next->next;
-        }
-        else{
-            printf("%d",current->val);
-            current = current->next;
-        }
-    }
-    return head;
-}
 */
