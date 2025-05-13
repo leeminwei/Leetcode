@@ -14,6 +14,7 @@ struct ListNode* swapPairs(struct ListNode* head) {
     if(current==NULL) return NULL;
     if(current->next==NULL) return current;
     //printf("%d",current->val);
+    //current記錄偶數位 current2記錄奇數位
     while(current2!=NULL&&current2->next!=NULL){
         current = current2->next;             // 偶數位（第2個）
         struct ListNode* next = current->next; // 下一組起始
