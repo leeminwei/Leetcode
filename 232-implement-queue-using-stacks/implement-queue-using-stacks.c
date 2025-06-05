@@ -11,8 +11,8 @@ MyQueue* myQueueCreate() {
     MyQueue* queue = (MyQueue*)malloc(sizeof(MyQueue));
     queue->arr = (int*)malloc(size*sizeof(int));
     queue->size = size;
-    queue->top = -1;
-    queue->front = 0;
+    queue->top = -1;  //top代表排隊順序
+    queue->front = 0; //front代表最外層的元素(也就是排隊的第一個人)
     return queue;
 }
 
@@ -21,6 +21,7 @@ void myQueuePush(MyQueue* obj, int x) {
 }
 
 int myQueuePop(MyQueue* obj) {
+    //因為會刪除元素，所以判斷條件是front > top
     if(obj->front > obj->top)
         return -1;
     else{
