@@ -29,6 +29,7 @@ int recentCounterPing(RecentCounter* obj, int t) {
 }
 
 void recentCounterFree(RecentCounter* obj) {
+    free(obj->arr);
     free(obj);
 }
 
