@@ -1,16 +1,3 @@
-int newsize(char* s){
-    int len = strlen(s);
-    int i = 0;
-    int* arr = (int*)malloc(len*sizeof(int));
-    char* token;
-    token = strtok(s, ".");
-    while (token!=NULL) {
-        arr[i++] = atoi(token);
-        token = strtok(NULL, ".");
-    }
-    arr = realloc(arr, i*sizeof(int));
-    return i;
-}
 int* convert(char* s, int* size){
     int len = strlen(s);
     int i = 0;
