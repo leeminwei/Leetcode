@@ -11,7 +11,7 @@ int newsize(char* s){
     arr = realloc(arr, i*sizeof(int));
     return i;
 }
-int* convert(char* s){
+int* convert(char* s, int* size){
     int len = strlen(s);
     int i = 0;
     int* arr = (int*)malloc(len*sizeof(int));
@@ -21,19 +21,15 @@ int* convert(char* s){
         arr[i++] = atoi(token);
         token = strtok(NULL, ".");
     }
+    *size = i;
     arr = realloc(arr, i*sizeof(int));
     return arr;
 }
 int compareVersion(char* version1, char* version2) {
-    char* v1_copy1 = strdup(version1);
-    char* v1_copy2 = strdup(version1);
-    char* v2_copy1 = strdup(version2);
-    char* v2_copy2 = strdup(version2);
-
-    int len1 = newsize(v1_copy1);
-    int len2 = newsize(v2_copy1);
-    int* arr1 = convert(v1_copy2);
-    int* arr2 = convert(v2_copy2);
+    int len1 = 0;
+    int len2 = 0;
+    int* arr1 = convert(version1, &len1);
+    int* arr2 = convert(version2, &len2);
     if (len1 > len2) {
         arr2 = realloc(arr2, len1*sizeof(int));
         for(int i=0 ; i<len1 ; i++) {
