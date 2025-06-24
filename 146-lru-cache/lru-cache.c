@@ -1,125 +1,162 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-#define HASH_SIZE 10000
-
-typedef struct Node {
+#define MAX_SIZE 1009
+typedef struct Node{
     int key;
     int value;
     struct Node* next;
     struct Node* prev;
-} Node;
+}ListNode;
 
-typedef struct LRUCache {
+typedef struct HashNode{
+    int key;
+    ListNode* node;
+    struct HashNode* next;
+}HashNode;
+
+typedef struct LRUCache{
     int capacity;
     int currentSize;
-    Node* head;
-    Node* tail;
-    Node** hashmap;  // Hash map: key -> Node*
-} LRUCache;
+    ListNode* head;
+    ListNode* tail;
+    HashNode* hashTable[MAX_SIZE];
+}LRUCache;
 
-int hash(int key) {
-    return key % HASH_SIZE;
-}
-
-// 建立新的節點
-Node* createNode(int key, int value) {
-    Node* node = (Node*)malloc(sizeof(Node));
-    node->key = key;
-    node->value = value;
-    node->next = NULL;
-    node->prev = NULL;
-    return node;
-}
-
-// 移動一個節點到尾端（最近使用）
-void moveToTail(LRUCache* obj, Node* node) {
-    if (node == obj->tail) return;
-
-    // 脫離目前位置
-    if (node->prev) node->prev->next = node->next;
-    else obj->head = node->next;
-
-    if (node->next) node->next->prev = node->prev;
-    else obj->tail = node->prev;
-
-    // 加到尾端
-    node->prev = obj->tail;
-    node->next = NULL;
-    if (obj->tail) obj->tail->next = node;
-    obj->tail = node;
-}
-
-// 刪除頭節點（最久未使用）
-void removeHead(LRUCache* obj) {
-    if (!obj->head) return;
-
-    Node* toRemove = obj->head;
-    int h = hash(toRemove->key);
-    obj->head = toRemove->next;
-    if (obj->head) obj->head->prev = NULL;
-    else obj->tail = NULL;
-
-    obj->hashmap[h] = NULL;
-    free(toRemove);
-    obj->currentSize--;
-}
 
 LRUCache* lRUCacheCreate(int capacity) {
-    LRUCache* obj = (LRUCache*)malloc(sizeof(LRUCache));
-    obj->capacity = capacity;
-    obj->currentSize = 0;
-    obj->head = NULL;
-    obj->tail = NULL;
-    obj->hashmap = (Node**)calloc(HASH_SIZE, sizeof(Node*));
-    return obj;
+    LRUCache* newLRU = (LRUCache*)malloc(sizeof(LRUCache));
+    newLRU->capacity = capacity;
+    newLRU->currentSize = 0;
+    newLRU->head = NULL;
+    newLRU->tail = NULL;
+    for (int i = 0; i < MAX_SIZE; i++) 
+        newLRU->hashTable[i] = NULL;
+    return newLRU;
 }
 
-int lRUCacheGet(LRUCache* obj, int key) {
-    int h = hash(key);
-    Node* node = obj->hashmap[h];
-    if (!node) return -1;
+int hashFunction(int key) {
+    return key % MAX_SIZE;
+}
 
-    moveToTail(obj, node);
-    return node->value;
+void removeFromHashTable(LRUCache* obj, int key) {
+    int hashIndex = hashFunction(key);
+    HashNode* current = obj->hashTable[hashIndex];
+    HashNode* prev = NULL;
+    
+    while (current != NULL) {
+        if (current->key == key) {
+            if (prev == NULL) {
+                obj->hashTable[hashIndex] = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            free(current);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
+}
+
+void moveToHead(LRUCache* obj, ListNode* node) {
+    if (node == obj->head) {
+        return;
+    }
+    else if (node == obj->tail) {
+        obj->tail = node->prev;
+        obj->tail->next = NULL;
+    }
+    else {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+    obj->head->prev = node;
+    node->next = obj->head;
+    node->prev = NULL;
+    obj->head = node;
+    return;
 }
 
 void lRUCachePut(LRUCache* obj, int key, int value) {
-    if (obj->capacity == 0) return;
-
-    int h = hash(key);
-    Node* node = obj->hashmap[h];
-
-    if (node) {
-        node->value = value;
-        moveToTail(obj, node);
-    } else {
-        Node* newNode = createNode(key, value);
-        obj->hashmap[h] = newNode;
-
-        // 插入尾端
-        newNode->prev = obj->tail;
-        newNode->next = NULL;
-        if (obj->tail) obj->tail->next = newNode;
-        obj->tail = newNode;
-        if (!obj->head) obj->head = newNode;
-
-        obj->currentSize++;
-
-        // 超出容量 → 移除最舊節點
-        if (obj->currentSize > obj->capacity) {
-            removeHead(obj);
+    int hashIndex = hashFunction(key);
+    HashNode* current = obj->hashTable[hashIndex];
+    HashNode* prev = NULL;
+    while (current != NULL) {
+        if (current->key == key) {
+            current->node->value = value;
+            moveToHead(obj, current->node);
+            return;
         }
+        prev = current;
+        current = current->next;
     }
+    HashNode* newHashNode = (HashNode*)malloc(sizeof(HashNode));
+    ListNode* newListNode = (ListNode*)malloc(sizeof(ListNode));
+    newHashNode->key = key;
+    newHashNode->node = newListNode;
+    if (prev == NULL) {
+        obj->hashTable[hashIndex] = newHashNode;
+    } else {
+        prev->next = newHashNode;
+    }
+    newHashNode->next = NULL;
+    newListNode->key = key;
+    newListNode->value = value;
+    newListNode->prev = NULL;
+    newListNode->next = NULL;
+    
+    if (obj->currentSize == obj->capacity) {
+        ListNode* lastNode = obj->tail;
+        removeFromHashTable(obj, lastNode->key);
+        if (obj->capacity == 1) {
+            obj->head = NULL;
+            obj->tail = NULL;
+        } else {
+            obj->tail = lastNode->prev;
+            obj->tail->next = NULL;
+        }
+        free(lastNode);
+        obj->currentSize--;
+    }
+    if (obj->currentSize == 0) {
+        obj->head = newListNode;
+        obj->tail = newListNode;
+    } else {
+        obj->head->prev = newListNode;
+        newListNode->next = obj->head;
+        obj->head = newListNode;
+    }
+    obj->currentSize++;
+    return;
+}
+
+int lRUCacheGet(LRUCache* obj, int key) {
+    int hashIndex = hashFunction(key);
+    HashNode* current = obj->hashTable[hashIndex];
+    while (current != NULL) {
+        if (current->key == key) {
+            moveToHead(obj, current->node);
+            return current->node->value;
+        }
+        current = current->next;
+    }
+    return -1;
 }
 
 void lRUCacheFree(LRUCache* obj) {
-    Node* cur = obj->head;
-    while (cur) {
-        Node* toFree = cur;
-        cur = cur->next;
-        free(toFree);
+    for (int i = 0; i < MAX_SIZE; i++) {
+        HashNode* current = obj->hashTable[i];
+        while (current != NULL) {
+            HashNode* next = current->next;
+            free(current);
+            current = next;
+        }
     }
-    free(obj->hashmap);
+    ListNode* current = obj->head;
+    while (current != NULL) {
+        ListNode* next = current->next;
+        free(current);
+        current = next;
+    }
     free(obj);
+    return;
 }
