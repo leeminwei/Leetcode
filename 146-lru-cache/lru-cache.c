@@ -1,162 +1,202 @@
 #include <stdio.h>
-#define MAX_SIZE 1009
+#define MAX_SIZE 1009 //設太小可能還是O(n)
+
 typedef struct Node{
     int key;
     int value;
     struct Node* next;
     struct Node* prev;
-}ListNode;
+}Node;
 
-typedef struct HashNode{
+typedef struct hash{
     int key;
-    ListNode* node;
-    struct HashNode* next;
-}HashNode;
+    struct Node* node;
+    struct hash* next;
+}hash;
 
 typedef struct LRUCache{
+    struct Node* head;
+    struct Node* tail;
     int capacity;
-    int currentSize;
-    ListNode* head;
-    ListNode* tail;
-    HashNode* hashTable[MAX_SIZE];
-}LRUCache;
+    int size;
+    hash* hashTable[MAX_SIZE];
+} LRUCache;
 
 
 LRUCache* lRUCacheCreate(int capacity) {
-    LRUCache* newLRU = (LRUCache*)malloc(sizeof(LRUCache));
-    newLRU->capacity = capacity;
-    newLRU->currentSize = 0;
-    newLRU->head = NULL;
-    newLRU->tail = NULL;
-    for (int i = 0; i < MAX_SIZE; i++) 
-        newLRU->hashTable[i] = NULL;
-    return newLRU;
+    LRUCache* LRU = (LRUCache*)malloc(sizeof(LRUCache));
+    LRU->head = NULL;
+    LRU->tail = NULL;
+    LRU->capacity = capacity;
+    LRU->size = 0;
+    for (int i=0 ; i<MAX_SIZE ; i++) {
+        LRU->hashTable[i] = NULL;
+    }
+    return LRU;
 }
 
-int hashFunction(int key) {
+int hashfunction(int key){
     return key % MAX_SIZE;
 }
 
-void removeFromHashTable(LRUCache* obj, int key) {
-    int hashIndex = hashFunction(key);
-    HashNode* current = obj->hashTable[hashIndex];
-    HashNode* prev = NULL;
-    
-    while (current != NULL) {
-        if (current->key == key) {
-            if (prev == NULL) {
-                obj->hashTable[hashIndex] = current->next;
-            } else {
-                prev->next = current->next;
-            }
-            free(current);
-            return;
-        }
-        prev = current;
-        current = current->next;
-    }
-}
-
-void moveToHead(LRUCache* obj, ListNode* node) {
-    if (node == obj->head) {
-        return;
-    }
-    else if (node == obj->tail) {
-        obj->tail = node->prev;
-        obj->tail->next = NULL;
-    }
-    else {
+void movetoHead(LRUCache* obj, Node* node){
+    //如果node是head
+    if (node == obj->head) return;
+    //如果node是中間節點
+    if (node->prev !=NULL && node->next!=NULL) {
         node->prev->next = node->next;
         node->next->prev = node->prev;
+        node->prev = NULL;
+        node->next = NULL;
     }
-    obj->head->prev = node;
+    //如果node是tail
+    else if (node == obj->tail) {
+        obj->tail = obj->tail->prev;
+        obj->tail->next = NULL;
+        node->prev = NULL;
+        node->next = NULL;
+    }
+    //把node移到head的位置
     node->next = obj->head;
-    node->prev = NULL;
+    obj->head->prev = node;
     obj->head = node;
     return;
 }
 
-void lRUCachePut(LRUCache* obj, int key, int value) {
-    int hashIndex = hashFunction(key);
-    HashNode* current = obj->hashTable[hashIndex];
-    HashNode* prev = NULL;
-    while (current != NULL) {
-        if (current->key == key) {
-            current->node->value = value;
-            moveToHead(obj, current->node);
+void InserttoHead(LRUCache* obj, Node* node){
+    if (obj->head == NULL) {
+        obj->head = obj->tail = node;  // 新節點是唯一節點
+    } else {
+        node->next = obj->head;
+        obj->head->prev = node;
+        obj->head = node;
+    }
+    obj->size++;
+}
+
+void removeTail(LRUCache* obj){
+    Node* toRemove = obj->tail;
+    if (obj->tail == obj->head) {
+        obj->head = NULL;
+        obj->tail = NULL;
+    } else {
+        obj->tail = obj->tail->prev;
+        obj->tail->next = NULL;
+    }
+    free(toRemove);
+    obj->size--;
+}
+
+void removefromHash(LRUCache* obj, int key){
+    int hashindex = hashfunction(key);
+    hash* cur = obj->hashTable[hashindex];
+    hash* prev = NULL;
+    while (cur != NULL) {
+        if (cur->key == key) {
+            if (prev == NULL) {
+                obj->hashTable[hashindex] = cur->next;
+            }
+            else{
+                prev->next = cur->next;
+            }
+            free(cur);
             return;
         }
-        prev = current;
-        current = current->next;
+        prev = cur;
+        cur = cur->next;
     }
-    HashNode* newHashNode = (HashNode*)malloc(sizeof(HashNode));
-    ListNode* newListNode = (ListNode*)malloc(sizeof(ListNode));
-    newHashNode->key = key;
-    newHashNode->node = newListNode;
-    if (prev == NULL) {
-        obj->hashTable[hashIndex] = newHashNode;
-    } else {
-        prev->next = newHashNode;
-    }
-    newHashNode->next = NULL;
-    newListNode->key = key;
-    newListNode->value = value;
-    newListNode->prev = NULL;
-    newListNode->next = NULL;
-    
-    if (obj->currentSize == obj->capacity) {
-        ListNode* lastNode = obj->tail;
-        removeFromHashTable(obj, lastNode->key);
-        if (obj->capacity == 1) {
-            obj->head = NULL;
-            obj->tail = NULL;
-        } else {
-            obj->tail = lastNode->prev;
-            obj->tail->next = NULL;
-        }
-        free(lastNode);
-        obj->currentSize--;
-    }
-    if (obj->currentSize == 0) {
-        obj->head = newListNode;
-        obj->tail = newListNode;
-    } else {
-        obj->head->prev = newListNode;
-        newListNode->next = obj->head;
-        obj->head = newListNode;
-    }
-    obj->currentSize++;
-    return;
 }
 
 int lRUCacheGet(LRUCache* obj, int key) {
-    int hashIndex = hashFunction(key);
-    HashNode* current = obj->hashTable[hashIndex];
-    while (current != NULL) {
-        if (current->key == key) {
-            moveToHead(obj, current->node);
-            return current->node->value;
+    int hashindex = hashfunction(key);
+    hash* cur = obj->hashTable[hashindex];
+    while (cur != NULL) {
+        if (cur->key == key) {
+            movetoHead(obj, cur->node);
+            return cur->node->value;
         }
-        current = current->next;
+        cur = cur->next;
     }
     return -1;
 }
 
+void lRUCachePut(LRUCache* obj, int key, int value) {
+    //如果LRU是空的
+    if (obj->head == NULL) {
+        Node* newnode = (Node*)malloc(sizeof(Node));
+        newnode->key = key;
+        newnode->value = value;
+        newnode->next = NULL;
+        newnode->prev = NULL;
+        obj->head = newnode;
+        obj->tail = newnode;
+        obj->size++;
+        int hashindex = hashfunction(key);
+        hash* newhashnode = (hash*)malloc(sizeof(hash));
+        newhashnode->key = key;
+        newhashnode->node = newnode;
+        newhashnode->next = NULL;
+        obj->hashTable[hashindex] = newhashnode;
+        return;
+    }
+    //如果LRU不是空的
+    int hashindex = hashfunction(key);
+    hash* cur = obj->hashTable[hashindex];
+    while (cur != NULL) {
+        //且有重複key出現，那就只需要更新value;
+        if (cur->key == key) {
+            cur->node->value = value;
+            movetoHead(obj, cur->node);
+            return;
+        }
+        cur = cur->next;
+    }
+    //如果沒有重複key出現
+    Node* newnode = (Node*)malloc(sizeof(Node));
+    newnode->key = key;
+    newnode->value = value;
+    newnode->next = NULL;
+    newnode->prev = NULL;
+    if (obj->size == obj->capacity) {
+        removefromHash(obj, obj->tail->key);
+        removeTail(obj);
+        InserttoHead(obj, newnode);
+    }
+    else{
+        InserttoHead(obj, newnode);
+    }
+    hash* newhashnode = (hash*)malloc(sizeof(hash));
+    newhashnode->key = key;
+    newhashnode->node = newnode;
+    newhashnode->next = obj->hashTable[hashindex];
+    obj->hashTable[hashindex] = newhashnode;
+}
+
 void lRUCacheFree(LRUCache* obj) {
     for (int i = 0; i < MAX_SIZE; i++) {
-        HashNode* current = obj->hashTable[i];
+        hash* current = obj->hashTable[i];
         while (current != NULL) {
-            HashNode* next = current->next;
+            hash* next = current->next;
             free(current);
             current = next;
         }
     }
-    ListNode* current = obj->head;
+    Node* current = obj->head;
     while (current != NULL) {
-        ListNode* next = current->next;
+        Node* next = current->next;
         free(current);
         current = next;
     }
     free(obj);
     return;
 }
+
+/**
+ * Your LRUCache struct will be instantiated and called as such:
+ * LRUCache* obj = lRUCacheCreate(capacity);
+ * int param_1 = lRUCacheGet(obj, key);
+ 
+ * lRUCachePut(obj, key, value);
+ 
+ * lRUCacheFree(obj);
+*/
