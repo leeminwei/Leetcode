@@ -64,8 +64,9 @@ void movetoHead(LRUCache* obj, Node* node){
 }
 
 void InserttoHead(LRUCache* obj, Node* node){
+    //因為放在remove之後，所以還是要考慮LRU為空的狀況
     if (obj->head == NULL) {
-        obj->head = obj->tail = node;  // 新節點是唯一節點
+        obj->head = obj->tail = node;
     } else {
         node->next = obj->head;
         obj->head->prev = node;
