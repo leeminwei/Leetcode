@@ -33,8 +33,8 @@ int* getAllElements(struct TreeNode* root1, struct TreeNode* root2, int* returnS
     int arr2_idx = 0;
     inorder(arr1, &arr1_idx, root1);
     inorder(arr2, &arr2_idx, root2);
-    print_array(arr1, arr1_idx);
-    print_array(arr2, arr2_idx);
+    //print_array(arr1, arr1_idx);
+    //print_array(arr2, arr2_idx);
     int* answer = (int*)malloc(10000 * sizeof(int));
     int answer_idx = 0;
     int a1 = 0;
