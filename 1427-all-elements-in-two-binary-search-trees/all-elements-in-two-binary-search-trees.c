@@ -64,6 +64,8 @@ int* getAllElements(struct TreeNode* root1, struct TreeNode* root2, int* returnS
             answer[answer_idx++] = arr2[i];
         }
     }
+    //free(arr1);
+    //free(arr2);
     *returnSize = answer_idx;
     return answer;
 }
