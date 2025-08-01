@@ -1,6 +1,8 @@
 int minFlips(int a, int b, int c){
+    //用無號整數左移 31 位
     unsigned int max = 1U << 31;
     int count = 0;
+    //如果是int型別，第一個位元會代表正負號，所以必須換成unsigned型別
     unsigned int ua = (unsigned int)a;
     unsigned int ub = (unsigned int)b;
     unsigned int uc = (unsigned int)c;
