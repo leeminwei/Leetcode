@@ -1,7 +1,7 @@
 int myAtoi(char* s) {
     int size = strlen(s);
     long long int sum = 0;
-    int check = 0;
+    int check = 0; //用來判斷是否遇到正負號或數字了
     int sign = 1;
     for (int i=0 ; i<size ; i++) {
         if ((s[i] - '0') >= 0 && (s[i] - '0') <= 9) {
