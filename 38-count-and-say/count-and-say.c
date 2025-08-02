@@ -7,7 +7,7 @@ char* countAndSay(int n) {
     }
     int index = 1;
     for (int i=1 ; i<n ; i++) {
-        char* buffer = (char*)malloc(INT_MAX * sizeof(char)); //用來存第n次的count和num
+        char* buffer = (char*)malloc(10001 * sizeof(char)); //用來存第n次的count和num
         int buffer_idx = 0;
         int j = 0;
         while (j < strlen(arr)) {
