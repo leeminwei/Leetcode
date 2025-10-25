@@ -6,46 +6,43 @@
  * };
  */
 struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
-    struct ListNode* newhead = (struct ListNode*)malloc(sizeof(struct ListNode)); 
-    newhead->next = NULL;
-    struct ListNode* tail = newhead;
-    struct ListNode* current = l1;
-    struct ListNode* current2 = l2;
-    int count = 0;
+    struct ListNode* cur1 = l1;
+    struct ListNode* cur2 = l2;
+    struct ListNode* dummy = (struct ListNode*)malloc(sizeof(struct ListNode));
+    dummy->next = NULL;
+    struct ListNode* cur = dummy;
+    int num = 0;
     int carry = 0;
-    while(current != NULL || current2 != NULL || carry){
-        struct ListNode* arr = malloc(sizeof(struct ListNode));
-        arr->next = NULL;
-        int val,val2;
-        if(current != NULL && current2 == NULL){
-            val = current->val;
-            val2 = 0;
-        }
-        else if(current2 != NULL && current == NULL){
-            val2 = current2->val;
-            val = 0;
-        }
-        else if(current != NULL && current2 != NULL){
-            val = current->val;
-            val2 = current2->val;
+    int x;
+    int y;
+    while (cur1 != NULL || cur2 != NULL) {
+        if (cur1 == NULL) {
+            x = 0;
         }
         else{
-            val = 0;
-            val2 = 0;
+            x = cur1->val;
         }
-        count = val + val2 + carry;
-        if(count>=10){
-            arr->val = count-10;
-            carry = 1;
+        if (cur2 == NULL) {
+            y = 0;
         }
-        else {
-            arr->val = count;
-            carry = 0;
+        else{
+            y = cur2->val;
         }
-        if (current) current = current->next;
-        if (current2) current2 = current2->next;
-        tail->next = arr;
-        tail = arr;
+        num = x + y + carry;
+        struct ListNode* newnode = (struct ListNode*)malloc(sizeof(struct ListNode));
+        newnode->val = num%10;
+        newnode->next = NULL;
+        cur->next = newnode;
+        cur = newnode;
+        carry = num/10;
+        if (cur1 != NULL) cur1 = cur1->next;
+        if (cur2 != NULL) cur2 = cur2->next;
     }
-    return newhead->next;
+    if (carry != 0) {
+        struct ListNode* newnode = (struct ListNode*)malloc(sizeof(struct ListNode));
+        newnode->val = carry;
+        newnode->next = NULL;
+        cur->next = newnode;
+    }
+    return dummy->next;
 }
