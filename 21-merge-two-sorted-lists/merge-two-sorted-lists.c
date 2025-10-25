@@ -5,36 +5,36 @@
  *     struct ListNode *next;
  * };
  */
-
+struct ListNode* createNode(int num) {
+    struct ListNode* newnode = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newnode->val = num;
+    newnode->next = NULL;
+    return newnode;
+}
 struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2) {
-    struct ListNode* tail = (struct ListNode*)malloc(sizeof(struct ListNode));
-    tail->next = NULL;
-    struct ListNode* dummy = tail;
-    while(list1!=NULL || list2!=NULL){
-        if(list1!=NULL&&list2!=NULL){
-            if(list1->val>list2->val){
-                tail->next = list2;
-                tail = tail->next;
-                list2 = list2->next;
-            }
-            else{
-                tail->next = list1;
-                tail = tail->next;
-                list1 = list1->next;
-            }
-        }
-        else if(list1!=NULL){
-            tail->next = list1;
-            tail = tail->next;
+    struct ListNode* newlist = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newlist->next = NULL;
+    struct ListNode* tail = newlist;
+    while (list1 != NULL && list2 != NULL) {
+        struct ListNode* newnode;
+        if (list1->val < list2->val) {
+            newnode = createNode(list1->val);
             list1 = list1->next;
         }
         else{
-            tail->next = list2;
-            tail = tail->next;
+            newnode = createNode(list2->val);
             list2 = list2->next;
         }
+        tail->next = newnode;
+        tail = newnode;
     }
-    return dummy->next;
+    if (list1 != NULL) {
+        tail->next = list1;
+    }
+    else if (list2 != NULL) {
+        tail->next = list2;
+    }
+    return newlist->next;
 }
 /*
 struct ListNode dummy;
