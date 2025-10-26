@@ -1,111 +1,97 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 
 typedef struct Node{
     char* page;
-    struct Node* next;
     struct Node* prev;
+    struct Node* next;
 }Node;
 
-
-typedef struct BrowserHistory{
+typedef struct {
     struct Node* head;
     struct Node* tail;
-    struct Node* current;
+    struct Node* cur;
     int size;
-} BrowserHistory;
+}BrowserHistory;
 
-
-BrowserHistory* browserHistoryCreate(char* homepage) {
+Node* createNode(char* name){
     Node* newnode = (Node*)malloc(sizeof(Node));
-    newnode->page = (char*)malloc(strlen(homepage)+1);
-    strcpy(newnode->page, homepage);
+    newnode->page = (char*)malloc(strlen(name)+1);
+    strcpy(newnode->page, name);
     newnode->next = NULL;
     newnode->prev = NULL;
-    BrowserHistory* newbrowser = (BrowserHistory*)malloc(sizeof(BrowserHistory));
-    newbrowser->head = newnode;
-    newbrowser->tail = newnode;
-    newbrowser->current = newnode;
-    newbrowser->size = 1;
-    return newbrowser;
+    return newnode;
+}
+
+BrowserHistory* browserHistoryCreate(char* homepage) {
+    Node* newnode = createNode(homepage);
+    BrowserHistory* DLL = (BrowserHistory*)malloc(sizeof(BrowserHistory));
+    DLL->head = newnode;
+    DLL->tail = newnode;
+    DLL->cur = newnode;
+    DLL->size = 1;
+    return DLL;
 }
 
 void browserHistoryVisit(BrowserHistory* obj, char* url) {
-    //如果目前瀏覽歷史只有homepage
+    Node* newnode = createNode(url);
+    //如果歷史紀錄只有一頁
     if (obj->size == 1) {
-        Node* newbrowser = (Node*)malloc(sizeof(Node));
-        newbrowser->page = (char*)malloc(strlen(url)+1);
-        strcpy(newbrowser->page, url);
-        newbrowser->next = NULL;
-        newbrowser->prev = obj->head;
-        obj->head->next = newbrowser;
-        obj->tail = newbrowser;
-        obj->current = newbrowser;
+        newnode->prev = obj->tail;
+        obj->tail->next = newnode;
+        obj->tail = newnode;
+        obj->cur = newnode; 
         obj->size++;
     }
-    else if (obj->current == obj->tail) {
-        Node* newbrowser = (Node*)malloc(sizeof(Node));
-        newbrowser->page = (char*)malloc(strlen(url)+1);
-        strcpy(newbrowser->page, url);
-        newbrowser->next = NULL;
-        newbrowser->prev = obj->current;
-        obj->current->next = newbrowser;
-        obj->current = newbrowser;
-        obj->tail = newbrowser;
+    //如果現在頁面剛好是在tail
+    else if (obj->cur == obj->tail) {
+        newnode->prev = obj->tail;
+        obj->tail->next = newnode;
+        obj->tail = newnode;
+        obj->cur = newnode; 
         obj->size++;
     }
-    else {
-        Node* newbrowser = (Node*)malloc(sizeof(Node));
-        newbrowser->page = (char*)malloc(strlen(url)+1);
-        strcpy(newbrowser->page, url);
-        newbrowser->next = NULL;
-        newbrowser->prev = obj->current;
-        Node* temp = obj->current->next;
+    else{
+        newnode->prev = obj->cur;
+        Node* temp = obj->cur->next;
         while (temp != NULL) {
-            Node* next = temp->next;
-            free(temp->page);
-            free(temp);
-            temp = next;
+            Node* toRemove = temp;
+            temp = temp->next;
+            free(toRemove->page);
+            free(toRemove);
             obj->size--;
         }
-        obj->current->next = NULL;
-        obj->current->next = newbrowser;
-        obj->current = newbrowser;
-        obj->tail = newbrowser;
-        obj->size++; 
+        obj->cur->next = newnode;
+        obj->cur = newnode;
+        obj->tail = newnode;
+        obj->size++;
     }
 }
 
 char* browserHistoryBack(BrowserHistory* obj, int steps) {
-    //如果瀏覽歷史只有homepage
-    if (obj->size == 1) {
-        return obj->head->page;
-    }
-    while (steps > 0 && obj->current->prev != NULL) {
-        obj->current = obj->current->prev;
+    while (obj->cur->prev != NULL && steps > 0) {
+        obj->cur = obj->cur->prev;
         steps--;
     }
-    return obj->current->page;
+    return obj->cur->page;
 }
 
 char* browserHistoryForward(BrowserHistory* obj, int steps) {
-    while (steps > 0 && obj->current->next != NULL) {
-        obj->current = obj->current->next;
+    while (obj->cur->next != NULL && steps > 0) {
+        obj->cur = obj->cur->next;
         steps--;
     }
-    return obj->current->page;
+    return obj->cur->page;
 }
 
 void browserHistoryFree(BrowserHistory* obj) {
-    Node* cur = obj->head;
-    while (cur != NULL) {
-        Node* next = cur->next;  // 提前存下個位置，否則 cur 被 free 後不能再訪問 cur->next
-        free(cur->page);         // 先釋放 malloc 出來的字串記憶體
-        free(cur);               // 再釋放節點本身
-        cur = next;              // 移動到下一個節點
+    while (obj->head != NULL) {
+        Node* toRemove = obj->head;
+        obj->head = obj->head->next;
+        free(toRemove->page);
+        free(toRemove); 
     }
-    free(obj); // 最後釋放 BrowserHistory 本體
+    free(obj);
 }
 
 /**
