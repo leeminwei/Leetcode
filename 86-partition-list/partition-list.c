@@ -6,42 +6,30 @@
  * };
  */
 struct ListNode* partition(struct ListNode* head, int x) {
-    struct ListNode* current = head;
-    //建立小於x的串列
-    struct ListNode* small = (struct ListNode*)malloc(sizeof(struct ListNode));
-    small->next = NULL;
-    struct ListNode* small_dummy = small;
-    
-    //建立大於等於x的串列
-    struct ListNode* big = (struct ListNode*)malloc(sizeof(struct ListNode));
-    big->next = NULL;
-    struct ListNode* big_dummy = big;
-
-    while(current!=NULL){
-        //當前的val小於x
-        if(current->val<x){
-            struct ListNode* new = (struct ListNode*)malloc(sizeof(struct ListNode));
-            new->val = current->val;
-            new->next = NULL;
-            small->next = new;
-            small = small->next;
+    struct ListNode* list1 = (struct ListNode*)malloc(sizeof(struct ListNode));
+    list1->next = NULL;
+    struct ListNode* tail1 = list1;
+    struct ListNode* list2 = (struct ListNode*)malloc(sizeof(struct ListNode));
+    list2->next = NULL;
+    struct ListNode* tail2 = list2;
+    struct ListNode* cur = head;
+    while (cur != NULL) {
+        if (cur->val >= x) {
+            struct ListNode* newnode = (struct ListNode*)malloc(sizeof(struct ListNode));
+            newnode->val = cur->val;
+            newnode->next = NULL;
+            tail1->next = newnode;
+            tail1 = newnode;
         }
-        //當前的val大於等於x
         else{
-            struct ListNode* new = (struct ListNode*)malloc(sizeof(struct ListNode));
-            new->val = current->val;
-            new->next = NULL;
-            big->next = new;
-            big = big->next;
+            struct ListNode* newnode = (struct ListNode*)malloc(sizeof(struct ListNode));
+            newnode->val = cur->val;
+            newnode->next = NULL;
+            tail2->next = newnode;
+            tail2 = newnode;
         }
-        current = current->next;
+        cur = cur->next;
     }
-
-    //因為數值較大的串列會在尾部所以要讓他接到NULL
-    big->next = NULL;
-
-    //最後將small串列和big串列接在一起
-    small->next = big_dummy->next;
-    
-    return small_dummy->next;
+    tail2->next = list1->next;
+    return list2->next;
 }
