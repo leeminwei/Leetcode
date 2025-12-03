@@ -6,22 +6,20 @@
  * };
  */
 struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
+    if (head == NULL || (head->next == NULL && n==1)) return NULL;
     struct ListNode* cur = head;
-    int size = 0;
+    int count = 0;
     while (cur != NULL) {
-        size++;
+        count++;
         cur = cur->next;
     }
-    if (size == 1 && n == 1) {
-        return NULL;
-    }
     struct ListNode* cur1 = head;
-    int count = 0;
-    struct ListNode* newlist = (struct ListNode*)malloc(sizeof(struct ListNode));
-    newlist->next = NULL;
-    struct ListNode* tail = newlist;
+    struct ListNode* newhead = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newhead->next = NULL;
+    struct ListNode* tail = newhead;
+    int idx = 0;
     while (cur1 != NULL) {
-        if (count == size-n) {
+        if (idx == count-n) {
             cur1 = cur1->next;
         }
         else{
@@ -32,7 +30,7 @@ struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
             tail = newnode;
             cur1 = cur1->next;
         }
-        count++;
+        idx++;
     }
-    return newlist->next;
+    return newhead->next;
 }
