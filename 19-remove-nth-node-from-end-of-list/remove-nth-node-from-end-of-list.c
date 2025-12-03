@@ -6,7 +6,7 @@
  * };
  */
 struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
-    if (head == NULL || (head->next == NULL && n==1)) return NULL;
+    //if (head == NULL || (head->next == NULL && n==1)) return NULL;
     struct ListNode* cur = head;
     int count = 0;
     while (cur != NULL) {
