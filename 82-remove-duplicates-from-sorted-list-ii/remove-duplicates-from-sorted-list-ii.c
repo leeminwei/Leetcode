@@ -6,35 +6,30 @@
  * };
  */
 struct ListNode* deleteDuplicates(struct ListNode* head) {
-    if(head==NULL||head->next==NULL) return head;
-    struct ListNode* current = head;
-    struct ListNode* current2 = head;
-    struct ListNode* tail = (struct ListNode*)malloc(sizeof(struct ListNode));
-    tail->next = NULL;
-    struct ListNode* dummy = tail;
+    struct ListNode* cur1 = head;
+    struct ListNode* cur2 = head;
+    struct ListNode* newhead = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newhead->next = NULL;
+    struct ListNode* tail = newhead;
     int count = 0;
-    while(current!=NULL){
-        while(current2!=NULL){
-            //printf("current = %d\n",current->val);
-            //printf("current2 = %d\n",current2->val);
-            if(current2==NULL)
-                break;
-            if(current->val == current2->val){
-                count++;
-            }
-            current2 = current2->next;
-        }
-        if(count==1){
-            struct ListNode* new = (struct ListNode*)malloc(sizeof(struct ListNode));
-            new->val = current->val;
-            new->next = NULL;
-            tail->next = new;
-            tail = tail->next;
-        }
+    while (cur1 != NULL) {
         count = 0;
-        current = current->next;
-        current2 = head;
+        while (cur2 != NULL) {
+            if (cur2->val == cur1->val && cur2 != cur1) {
+                count = 1;
+                printf("check\n");
+            }
+            cur2 = cur2->next;
+        }
+        if (count == 0) {
+            struct ListNode* newnode = (struct ListNode*)malloc(sizeof(struct ListNode));
+            newnode->val = cur1->val;
+            newnode->next = NULL;
+            tail->next = newnode;
+            tail = newnode;
+        }
+        cur1 = cur1->next;
+        cur2 = head;
     }
-    tail->next = NULL;
-    return dummy->next;
+    return newhead->next;
 }
