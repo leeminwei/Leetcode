@@ -27,6 +27,8 @@ struct ListNode* swapNodes(struct ListNode* head, int k) {
     typedef struct ListNode listnode;
     int len = 0;
     listnode* newhead = copylist(head, &len);
+
+    //反轉原本的鏈(1、2、3、4、5) -> (5、4、3、2、1)
     listnode* prev = NULL;
     listnode* cur = head;
     while (cur != NULL) {
@@ -35,8 +37,10 @@ struct ListNode* swapNodes(struct ListNode* head, int k) {
         prev = cur;
         cur = next;
     }
+
     listnode* original = newhead;
     listnode* reverse = prev;
+    //要知道哪個是前面數第K個(left)，哪個是倒數第K個(right)
     int idx = len-k+1;
     int left;
     int right;
